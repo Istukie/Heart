@@ -7,10 +7,7 @@ window.requestAnimationFrame =
   window.msRequestAnimationFrame ||
   (function () {
     return function (callback, element) {
-      var lastTime = element.__lastTime;
-      if (lastTime === undefined) {
-        lastTime = 0;
-      }
+      var lastTime = element.__lastTime || 0;
       var currTime = Date.now();
       var timeToCall = Math.max(1, 33 - (currTime - lastTime));
       window.setTimeout(callback, timeToCall);
@@ -18,7 +15,7 @@ window.requestAnimationFrame =
     };
   })();
 
-window.isDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(((navigator.userAgent || navigator.vendor || window.opera)).toLowerCase()));
+window.isDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test((navigator.userAgent || navigator.vendor || window.opera).toLowerCase()));
 
 var loaded = false;
 var init = function () {
@@ -93,9 +90,9 @@ var init = function () {
   var time = 0;
   var loop = function () {
     var n = -Math.cos(time);
-    pulse((1 + n) * 0.5, (1 + n) * 0.5);
-    time += ((Math.sin(time)) < 0 ? 9 : (n > 0.8) ? 0.2 : 1) * config.timeDelta;
-    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    pulse((1 + n) * .5, (1 + n) * .5);
+    time += ((Math.sin(time)) < 0 ? 9 : (n > 0.8) ? .2 : 1) * config.timeDelta;
+    ctx.fillStyle = "rgba(0,0,0,.1)";
     ctx.fillRect(0, 0, width, height);
     for (i = e.length; i--;) {
       var u = e[i];
@@ -103,14 +100,18 @@ var init = function () {
       var dx = u.trace[0].x - q[0];
       var dy = u.trace[0].y - q[1];
       var length = Math.sqrt(dx * dx + dy * dy);
-      if (length < 10) {
-        if (rand() > 0.95) {
+      if (10 > length) {
+        if (0.95 < rand()) {
           u.q = ~~(rand() * heartPointsCount);
         } else {
-          if (rand() > 0.99) u.D *= -1;
+          if (0.99 < rand()) {
+            u.D *= -1;
+          }
           u.q += u.D;
           u.q %= heartPointsCount;
-          if (u.q < 0) u.q += heartPointsCount;
+          if (0 > u.q) {
+            u.q += heartPointsCount;
+          }
         }
       }
       u.vx += -dx / length * u.speed;
@@ -130,19 +131,8 @@ var init = function () {
         ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
       }
     }
-
     ctx.fillStyle = "rgba(255,255,255,1)";
-    for (i = u.trace.length + 13; i--;) ctx.fillRect(targetPoints[i][0], targetPoints[i][1], 2, 2);
-
-    // === ADD TEXT BELOW HEART ===
-    ctx.save();
-    ctx.font = 'bold 40px sans-serif';
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText('I love you', width / 2, height / 2 + 160);
-    ctx.restore();
-
+    for (i = 0; i < 13; i++) ctx.fillRect(targetPoints[i][0], targetPoints[i][1], 2, 2);
     window.requestAnimationFrame(loop, canvas);
   };
   loop();
@@ -151,4 +141,3 @@ var init = function () {
 var s = document.readyState;
 if (s === 'complete' || s === 'loaded' || s === 'interactive') init();
 else document.addEventListener('DOMContentLoaded', init, false);
-
