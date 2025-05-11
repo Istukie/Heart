@@ -1,7 +1,7 @@
 window.requestAnimationFrame =
   window.__requestAnimationFrame ||
   window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||7
+  window.webkitRequestAnimationFrame ||
   window.mozRequestAnimationFrame ||
   window.oRequestAnimationFrame ||
   window.msRequestAnimationFrame ||
@@ -136,6 +136,12 @@ var init = function () {
     }
     ctx.fillStyle = "rgba(255,255,255,1)";
     for (i = u.trace.length + 13; i--;) ctx.fillRect(targetPoints[i][0], targetPoints[i][1], 2, 2);
+
+    // Draw "I love you" text on canvas
+    ctx.font = 'bold 48px sans-serif';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('I love you', width / 2, height * 0.9); // near bottom
 
     window.requestAnimationFrame(loop, canvas);
   };
