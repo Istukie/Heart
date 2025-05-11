@@ -1,13 +1,16 @@
 window.requestAnimationFrame =
   window.__requestAnimationFrame ||
   window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||7
   window.mozRequestAnimationFrame ||
   window.oRequestAnimationFrame ||
   window.msRequestAnimationFrame ||
   (function () {
     return function (callback, element) {
-      var lastTime = element.__lastTime || 0;
+      var lastTime = element.__lastTime;
+      if (lastTime === undefined) {
+        lastTime = 0;
+      }
       var currTime = Date.now();
       var timeToCall = Math.max(1, 33 - (currTime - lastTime));
       window.setTimeout(callback, timeToCall);
@@ -15,7 +18,7 @@ window.requestAnimationFrame =
     };
   })();
 
-window.isDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test((navigator.userAgent || navigator.vendor || window.opera).toLowerCase()));
+window.isDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(((navigator.userAgent || navigator.vendor || window.opera)).toLowerCase()));
 
 var loaded = false;
 var init = function () {
@@ -132,7 +135,8 @@ var init = function () {
       }
     }
     ctx.fillStyle = "rgba(255,255,255,1)";
-    for (i = 0; i < 13; i++) ctx.fillRect(targetPoints[i][0], targetPoints[i][1], 2, 2);
+    for (i = u.trace.length + 13; i--;) ctx.fillRect(targetPoints[i][0], targetPoints[i][1], 2, 2);
+
     window.requestAnimationFrame(loop, canvas);
   };
   loop();
